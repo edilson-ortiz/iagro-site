@@ -1,0 +1,7 @@
+services:
+  iagro-web:
+    build: .
+    container_name: iagro-web
+    ports:
+      - "8080:80"
+    restart: unless-stopped

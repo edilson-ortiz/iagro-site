@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contacto — Iagro</title>
+<meta name="description" content="Contactá a Iagro por WhatsApp, email o visitá nuestra oficina en Santa Cruz de la Sierra, Bolivia. Consultanos por estaciones meteorológicas y pluviómetros digitales.">
+<link rel="icon" type="image/png" href="img/logo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <img src="img/logo.png" alt="Iagro">
+      <span>Iagro<span class="sub">Clima &amp; Agro Data</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#servicios">Servicios</a>
+      <a href="index.html#como-funciona">Cómo funciona</a>
+      <a href="index.html#app">App Iagro Clima</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="#whatsapp" class="cta-link">Hablar por WhatsApp</a>
+    </nav>
+  </div>
+</header>
+
+<section class="legal-hero">
+  <div class="container">
+    <span class="eyebrow">Contacto</span>
+    <h1>Hablemos del clima de tu finca</h1>
+    <p class="updated" style="font-family: var(--font-body); font-size: 1rem; max-width: 56ch;">Contanos dónde está tu parcela y qué necesitás monitorear. Te respondemos por WhatsApp o email en menos de 24 horas hábiles.</p>
+  </div>
+</section>
+
+<section class="legal-body">
+  <div class="container contact-page-grid">
+
+    <div class="form-card">
+      <h3 style="margin-bottom: 22px;">Envianos un mensaje</h3>
+      <form id="contact-form">
+        <div class="field">
+          <label for="nombre">Nombre completo</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellido" required>
+        </div>
+        <div class="field">
+          <label for="telefono">WhatsApp / Teléfono</label>
+          <input type="tel" id="telefono" name="telefono" placeholder="+591 ..." required>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="tu@email.com">
+        </div>
+        <div class="field">
+          <label for="ubicacion">Ubicación de la parcela</label>
+          <input type="text" id="ubicacion" name="ubicacion" placeholder="Departamento, municipio o zona">
+        </div>
+        <div class="field">
+          <label for="mensaje">Contanos qué necesitás</label>
+          <textarea id="mensaje" name="mensaje" placeholder="Tipo de cultivo, tamaño de la parcela, qué te gustaría monitorear..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Enviar mensaje</button>
+        <p class="form-note">Al enviar este formulario aceptás nuestra <a href="privacidad.html" style="color:var(--azure); text-decoration:underline;">Política de Privacidad</a>. Te contactaremos solo para responder tu consulta.</p>
+      </form>
+    </div>
+
+    <div>
+      <div class="contact-card" style="margin-bottom: 24px;">
+        <div class="contact-list">
+          <div class="contact-item">
+            <div class="ci-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6 12 13 2 6"/><path d="M2 6h20v12H2z"/></svg></div>
+            <div><div class="ci-label">Email</div><div class="ci-value">serranoluizedil@gmail.com</div></div>
+          </div>
+          <div class="contact-item" id="whatsapp">
+            <div class="ci-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div><div class="ci-label">WhatsApp</div><div class="ci-value"><a href="https://wa.me/59176871405" target="_blank" rel="noopener">+591 76871405</a></div></div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><div class="ci-label">Casa matriz</div><div class="ci-value">Barrio Magisterio Norte, entre 7º y 8º anillo, C. #2 Nº 40 — Santa Cruz de la Sierra, Bolivia</div></div>
+          </div>
+        </div>
+      </div>
+
+      <a href="https://wa.me/59176871405" target="_blank" rel="noopener" class="wa-band" style="display:flex; text-decoration:none; margin-bottom:24px;">
+        <div>
+          <h3>Escribinos directo por WhatsApp</h3>
+          <p>Respuesta rápida para consultas sobre instalación y precios.</p>
+        </div>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff" style="flex-shrink:0;"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.27 4.81L2 22l5.43-1.36a9.85 9.85 0 0 0 4.61 1.17h.01c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2z"/></svg>
+      </a>
+
+      <div class="map-frame">
+        <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-63.20%2C-17.76%2C-63.13%2C-17.70&layer=mapnik" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación Iagro Santa Cruz"></iframe>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="img/logo.png" alt="Iagro"> Iagro</div>
+        <p>Red de pluviómetros digitales y estaciones meteorológicas conectadas para el agro, con notificaciones por WhatsApp y la app Iagro Clima.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Empresa</h4>
+        <a href="index.html#servicios">Servicios</a>
+        <a href="index.html#como-funciona">Cómo funciona</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="privacidad.html">Política de privacidad</a>
+        <a href="terminos.html">Términos de servicio</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Iagro. Todos los derechos reservados.</span>
+      <span>Santa Cruz, Bolivia</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
