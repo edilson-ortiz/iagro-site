@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>iAgro - Pronóstico de Lluvia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=Inter:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#182849;
+    --navy-dark:#101c37;
+    --green:#7cb342;
+    --green-dark:#5c8a2e;
+    --sky:#8ecae6;
+    --blue:#2e86c1;
+    --paper:#f5f8fa;
+    --text-light:#f5f8fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:var(--navy-dark);}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--text-light);
+    -webkit-tap-highlight-color:transparent;
+  }
+  #app{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    height:100dvh;
+    overflow:hidden;
+  }
+
+  /* ---- Map (ocupa todo el espacio disponible, arrancando desde arriba del todo) ---- */
+  .map-wrap{
+    position:relative;
+    flex:1;
+    min-height:0;
+    background:#0e161f;
+    overflow:hidden; /* clave: recorta lo que sobresalga */
+  }
+  #mapaFrame{
+    position:absolute;
+    top:-10px;
+    left:0;
+    width:100%;
+    height:calc(100% + 10px);
+    border:0;
+  }
+  .map-loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--text-light);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.85rem;
+    opacity:0.7;
+    pointer-events:none;
+  }
+
+  /* ---- Overlay: header + season-bar + legend + ayuda flotan encima del mapa (solo arriba) ---- */
+  .overlay{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    z-index:10;
+    pointer-events:none; /* deja pasar el gesto al mapa por defecto */
+  }
+  .overlay > *{
+    pointer-events:auto; /* pero los controles del overlay sí reciben toques */
+  }
+
+  header{
+    background:var(--navy-dark);
+    padding:12px 16px 10px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  header img.logo{
+    width:42px;
+    height:42px;
+    flex-shrink:0;
+  }
+  .header-text{min-width:0;}
+  .brand{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--sky);
+    opacity:0.9;
+    margin-bottom:2px;
+  }
+  h1.lote-nombre{
+    font-family:'Zilla Slab',serif;
+    font-weight:700;
+    font-size:1.35rem;
+    line-height:1.15;
+    color:var(--text-light);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .lote-meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;
+    color:var(--sky);
+    margin-top:3px;
+    opacity:0.8;
+  }
+
+  /* ---- Signature season bar (colores del logo) ---- */
+  .season-bar{
+    height:6px;
+    background:linear-gradient(90deg,var(--navy) 0%,var(--green) 35%,var(--sky) 65%,var(--blue) 100%);
+    background-size:200% 100%;
+    animation:driftSeason 18s linear infinite;
+  }
+  @keyframes driftSeason{
+    0%{background-position:0% 0%;}
+    100%{background-position:200% 0%;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .season-bar{animation:none;}
+  }
+
+  /* ---- Legend ---- */
+  .legend{
+    display:flex;
+    gap:14px;
+    padding:9px 16px;
+    background:var(--navy);
+    font-size:0.76rem;
+    font-weight:600;
+    flex-wrap:wrap;
+  }
+  .chip{display:flex;align-items:center;gap:6px;color:var(--text-light);opacity:0.9;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .dot-suave{background:var(--sky);}
+  .dot-moderada{background:var(--blue);}
+  .dot-intensa{background:var(--green-dark);}
+
+  /* ---- Ayuda ---- */
+  details.ayuda{
+    background:var(--navy);
+    border-top:1px solid rgba(245,248,250,0.08);
+  }
+  details.ayuda summary{
+    list-style:none;
+    cursor:pointer;
+    padding:9px 16px;
+    font-size:0.8rem;
+    font-weight:600;
+    color:var(--green);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  details.ayuda summary::-webkit-details-marker{display:none;}
+  details.ayuda summary::after{
+    content:'+';
+    margin-left:auto;
+    font-size:1rem;
+  }
+  details.ayuda[open] summary::after{content:'−';}
+  details.ayuda p{
+    padding:0 16px 13px;
+    font-size:0.83rem;
+    line-height:1.5;
+    color:var(--text-light);
+    opacity:0.85;
+  }
+
+  /* ---- Footer ---- */
+  footer{
+    flex-shrink:0;
+    background:var(--navy-dark);
+    text-align:center;
+    padding:6px 10px;
+    font-size:0.66rem;
+    color:var(--text-light);
+    opacity:0.5;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="map-wrap">
+    <div class="map-loading" id="mapLoading">Cargando pronóstico…</div>
+    <iframe id="mapaFrame" sandbox="allow-scripts allow-same-origin" allowfullscreen title="Mapa de precipitación"></iframe>
+  </div>
+
+  <div class="overlay">
+    <header>
+      <img class="logo" src="img/logo.png" alt="iAgro">
+      <div class="header-text">
+        <div class="brand">iAgro · Temporada de Siembra</div>
+        <h1 class="lote-nombre" id="loteNombre">Cargando lote…</h1>
+        <p class="lote-meta" id="loteMeta">—</p>
+      </div>
+    </header>
+
+    <div class="season-bar" aria-hidden="true"></div>
+
+    <div class="legend">
+      <span class="chip"><span class="dot dot-suave"></span>Suave</span>
+      <span class="chip"><span class="dot dot-moderada"></span>Moderada</span>
+      <span class="chip"><span class="dot dot-intensa"></span>Intensa</span>
+    </div>
+  </div>
+
+  <footer>
+  iAgro · Pronóstico de precipitación en tiempo real ·
+  Datos de lluvia por <a href="https://www.ventusky.com" target="_blank" rel="noopener noreferrer" style="color:var(--sky);">Ventusky.com</a>
+</footer>
+
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+
+  const lat = params.get('lat') || '-17.78';
+  const lon = params.get('lon') || '-63.18';
+  const zoom = params.get('zoom') || '5';
+  const nombreRaw = params.get('nombre') || 'Santa Cruz de la Sierra';
+  const nombre = decodeURIComponent(nombreRaw.replace(/\+/g, ' '));
+
+  document.getElementById('loteNombre').textContent = nombre;
+  document.getElementById('loteMeta').textContent =
+    `Lat ${lat}, Lon ${lon}`;
+
+  const src =
+    `https://embed.ventusky.com/?p=${lat};${lon};${zoom}` +
+    `&l=rain-3h&w=soft` +
+    `&pin=${lat};${lon};dot;${encodeURIComponent(nombre)}`;
+
+  const frame = document.getElementById('mapaFrame');
+  frame.src = src;
+  frame.addEventListener('load', () => {
+    document.getElementById('mapLoading').style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
