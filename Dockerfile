@@ -10,6 +10,7 @@ COPY privacidad.html /usr/share/nginx/html/privacidad.html
 COPY terminos.html /usr/share/nginx/html/terminos.html
 COPY contacto.html /usr/share/nginx/html/contacto.html
 COPY radar.html /usr/share/nginx/html/radar.html
+COPY register.html /usr/share/nginx/html/register.html
 COPY css/ /usr/share/nginx/html/css/
 COPY js/ /usr/share/nginx/html/js/
 COPY img/ /usr/share/nginx/html/img/

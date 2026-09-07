@@ -200,7 +200,7 @@
 
   <div class="overlay">
     <header>
-      <img class="logo" src="img/logo.png" alt="iAgro">
+      <img class="logo" src="/img/logo.png" alt="iAgro">
       <div class="header-text">
         <div class="brand">iAgro · Temporada de Siembra</div>
         <h1 class="lote-nombre" id="loteNombre">Cargando lote…</h1>
@@ -225,28 +225,274 @@
 </div>
 
 <script>
-  const params = new URLSearchParams(window.location.search);
 
-  const lat = params.get('lat') || '-17.78';
-  const lon = params.get('lon') || '-63.18';
-  const zoom = params.get('zoom') || '5';
-  const nombreRaw = params.get('nombre') || 'Santa Cruz de la Sierra';
-  const nombre = decodeURIComponent(nombreRaw.replace(/\+/g, ' '));
+const API_BASE =
+  'https://n8n.iagro360.xyz/webhook/2188cc9b-b229-4e2d-946b-4769f9b169ec/client';
 
-  document.getElementById('loteNombre').textContent = nombre;
-  document.getElementById('loteMeta').textContent =
-    `Lat ${lat}, Lon ${lon}`;
+const loteNombre =
+  document.getElementById('loteNombre');
 
-  const src =
-    `https://embed.ventusky.com/?p=${lat};${lon};${zoom}` +
-    `&l=rain-3h&w=soft` +
-    `&pin=${lat};${lon};dot;${encodeURIComponent(nombre)}`;
+const loteMeta =
+  document.getElementById('loteMeta');
 
-  const frame = document.getElementById('mapaFrame');
-  frame.src = src;
-  frame.addEventListener('load', () => {
-    document.getElementById('mapLoading').style.display = 'none';
-  });
+const mapLoading =
+  document.getElementById('mapLoading');
+
+const frame =
+  document.getElementById('mapaFrame');
+
+
+async function cargarRadar() {
+
+  // ==========================================
+  // OBTENER CÓDIGO DE /radar/11
+  // ==========================================
+
+  const path = window.location.pathname;
+
+  const match = path.match(
+    /^\/radar\/([^\/]+)\/?$/
+  );
+
+  if (!match) {
+
+    loteNombre.textContent =
+      'Radar no especificado';
+
+    loteMeta.textContent =
+      'URL inválida';
+
+    mapLoading.textContent =
+      'Radar no disponible';
+
+    return;
+  }
+
+  const codigo = match[1];
+
+  console.log(
+    'Código detectado:',
+    codigo
+  );
+
+
+  // ==========================================
+  // CARGANDO
+  // ==========================================
+
+  loteNombre.textContent =
+    'Cargando…';
+
+  loteMeta.textContent =
+    `Código: ${codigo}`;
+
+  mapLoading.textContent =
+    'Consultando radar…';
+
+
+  try {
+
+    // ========================================
+    // CONSULTAR API
+    // ========================================
+
+    const apiUrl =
+      `${API_BASE}/${encodeURIComponent(codigo)}`;
+
+    console.log(
+      'Consultando API:',
+      apiUrl
+    );
+
+
+    const response =
+      await fetch(apiUrl);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+
+    }
+
+
+    const resultado =
+      await response.json();
+
+
+    console.log(
+      'Respuesta API:',
+      resultado
+    );
+
+
+    // ========================================
+    // RADAR NO EXISTE
+    // ========================================
+
+    if (
+      resultado.success !== true ||
+      !resultado.data
+    ) {
+
+      loteNombre.textContent =
+        'Radar no encontrado';
+
+      loteMeta.textContent =
+        `Código: ${codigo}`;
+
+      mapLoading.textContent =
+        'No existe este radar';
+
+      return;
+    }
+
+
+    // ========================================
+    // DATOS DE LA API
+    // ========================================
+
+    const data =
+      resultado.data;
+
+
+    // IMPORTANTE:
+    // Tu API entrega "lat" y "lon"
+
+    const lat =
+      Number(data.lat);
+
+    const lon =
+      Number(data.lon);
+
+
+    const nombre =
+      data.nombre_propiedad ||
+      data.codigo ||
+      `Radar ${codigo}`;
+
+
+    console.log(
+      'Latitud:',
+      lat
+    );
+
+    console.log(
+      'Longitud:',
+      lon
+    );
+
+    console.log(
+      'Nombre:',
+      nombre
+    );
+
+
+    // ========================================
+    // VALIDAR COORDENADAS
+    // ========================================
+
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lon)
+    ) {
+
+      loteNombre.textContent =
+        'Radar sin ubicación';
+
+      loteMeta.textContent =
+        'Las coordenadas no son válidas';
+
+      mapLoading.textContent =
+        'Mapa no disponible';
+
+      return;
+    }
+
+
+    // ========================================
+    // MOSTRAR INFORMACIÓN
+    // ========================================
+
+    loteNombre.textContent =
+      nombre;
+
+    loteMeta.textContent =
+      `Lat ${lat}, Lon ${lon}`;
+
+
+    // ========================================
+    // CREAR URL VENTUSKY
+    // ========================================
+
+    const zoom = 5;
+
+
+    const src =
+      `https://embed.ventusky.com/?p=${lat};${lon};${zoom}` +
+      `&l=rain-3h&w=soft` +
+      `&pin=${lat};${lon};dot;${encodeURIComponent(nombre)}`;
+
+
+    console.log(
+      'URL Ventusky:',
+      src
+    );
+
+
+    // ========================================
+    // CARGAR RADAR
+    // ========================================
+
+    frame.src = src;
+
+
+    frame.addEventListener(
+      'load',
+      () => {
+
+        console.log(
+          'Ventusky cargado'
+        );
+
+        mapLoading.style.display =
+          'none';
+
+      },
+      { once: true }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      'Error consultando API:',
+      error
+    );
+
+
+    loteNombre.textContent =
+      'Error de conexión';
+
+    loteMeta.textContent =
+      `Código: ${codigo}`;
+
+    mapLoading.textContent =
+      'No se pudo consultar el radar';
+
+  }
+
+}
+
+
+// ==========================================
+// INICIAR
+// ==========================================
+
+cargarRadar();
+
 </script>
 
 </body>
